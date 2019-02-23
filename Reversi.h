@@ -1,3 +1,4 @@
+#include <string>
 typedef int Color;
 const Color EMPTY = 0;
 const Color BLACK = 1;
@@ -16,6 +17,22 @@ struct Point
   Point(int x,int y){
     this->x = x;
     this->y = y;
+  }
+
+  Point(std::string coordstr) throw(std::invalid_argument){
+    if(coordstr.length() < 2)
+      throw std::invalid_argument("The argument must be Reversi style coordinates!" );
+
+      x = coordstr[0] -'a' +1;
+      y = coordstr[1] -'1' +1;
+  }
+
+  operator std::string() const{
+    std::ostringstream oss;
+    oss << static_cast<char>( 'a' +x-1)
+        << static_cast<char>( '1' +y-1);
+
+    return oss.str();
   }
 };
 

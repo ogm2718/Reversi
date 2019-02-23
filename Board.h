@@ -13,12 +13,27 @@ public:
   bool undo();
   bool isGameOver() const;
 
-  unsigned countDisc(Color color) const;
-  Color getColor(const Point& p) const;
-  const std::vector<Point>& getMovablePos() const;
-  std::vector<Disc> getUpdate() const;
-  Color getCorrentColor() const;
-  unsigned getTurns() const;
+  unsigned countDisc(Color color) const{
+    /*colorの石の数を返す*/
+    return Discs[color];
+  }
+  Color getColor(const Point& p) const{
+    return RawBoard[p.x][p.y];
+  }
+  const std::vector<Point>& getMovablePos() const{
+    /*打てる位置のvectorを返す*/
+    return MovablePos[Turns];
+  }
+  std::vector<Disc> getUpdate() const{
+    if(!UpdateLog.empty())return UpdateLog.back();
+    else return std::vector<Disc>();
+  }
+  Color getCorrentColor() const{
+    return CurrentColor;
+  }
+  unsigned getTurns() const{
+    return Turns;
+  }
 
 private:
   enum Direction{
@@ -50,5 +65,3 @@ private:
   void initMovable();
 
 };
-
-Discs[BLACK] = 2;//blackは初期配置で2つ
