@@ -32,9 +32,9 @@ int main(){
 
   while (true) {
     Board.print();
-    cout << "BLACK" << Board.countDisc(BLACK) << " ";
-    cout << "WHITE" << Board.countDisc(WHITE) << " ";
-    cout << "SPACE" << Board.countDisc(EMPTY) << endl << endl;
+    cout << "BLACK " << Board.countDisc(BLACK) << " ";
+    cout << "WHITE " << Board.countDisc(WHITE) << " ";
+    cout << "SPACE " << Board.countDisc(EMPTY) << endl << endl;
 
     cout << "Please input your move: ";
     Point p;
