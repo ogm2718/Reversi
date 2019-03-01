@@ -1,8 +1,10 @@
-#include <Board.h>
-
-int dx[]={-1,0,1,-1,1,-1,0,1};
-int dy[]={-1,-1,-1,0,0,1,1,1};//LU->U->...->LC->...RD
-int dr[]={UPPER_LEFT,UPPER,UPPER_RIGHT,LEFT,RIGHT,LOWER_LEFT,LOWER,LOWER_RIGHT};
+#include "Board.h"
+#include <iostream>
+using namespace std;
+int dx[]={ -1,  0,  1, -1,  1, -1,  0,  1};
+int dy[]={ -1, -1, -1,  0,  0,  1,  1,  1};//LU->U->...->LC->...RD
+int dr[]={  2,  1,128,  4, 64,  8, 16, 32};
+//{UPPER_LEFT,UPPER,UPPER_RIGHT,LEFT,RIGHT,LOWER_LEFT,LOWER,LOWER_RIGHT};
 
 Board::Board(){
   init();
@@ -11,7 +13,7 @@ Board::Board(){
 void Board::init(){
   /*すべてのスペースを空白にする*/
   for(unsigned x=1;x<=BOARD_SIZE;x++){
-    for(unsigned y=1;x<=BOARD_SIZE;y++){
+    for(unsigned y=1;y<=BOARD_SIZE;y++){
       RawBoard[x][y]=EMPTY;
     }
   }
@@ -42,7 +44,7 @@ void Board::init(){
   initMovable();
 }
 
-unsigned Board::checkMobility(const Disc &disc){
+unsigned Board::checkMobility(const Disc &disc)const {
   /*
   discで指定された座標に,disc.colorの石が置けるかどうか,
   また,どの方向に石を裏返すことが出来るかを判定する
@@ -52,18 +54,18 @@ unsigned Board::checkMobility(const Disc &disc){
   int x,y;
   unsigned dir = NONE;
 
-  for(int i=0;i<9;i++){
+  for(int i=0;i<8;i++){
     if(RawBoard[disc.x+dx[i]][disc.y+dy[i]] == -disc.color){
       x = disc.x+2*dx[i];
       y = disc.y+2*dy[i];
-      while(RawBoard[x][y]==-disc.color){x+=dx[i];y+=d[y];}
+      while(RawBoard[x][y]==-disc.color){x+=dx[i];y+=dy[i];}
       if(RawBoard[x][y]==disc.color)dir |= dr[i];
     }
   }
   return dir;
 }
 
-bool Board:undo(){
+bool Board::undo(){
   /*1ターン戻せるかどうかを判定し,戻せるなら状況を戻す*/
   if(Turns == 0)return false;
   CurrentColor *=-1;
@@ -81,7 +83,7 @@ bool Board:undo(){
   }else{
     /*前のターンがパスでない*/
     --Turns;
-
+    std::cout << update[0].x << " " << update[0].y << endl;
     RawBoard[update[0].x][update[0].y]=EMPTY;
     for(int i=1;i<(int)update.size();i++){
       RawBoard[update[i].x][update[i].y]=-CurrentColor;
@@ -112,21 +114,20 @@ bool Board::move(const Point& point){
   if(point.y < 0 || point.y >= BOARD_SIZE) return false;
   if(MovableDir[Turns][point.x][point.y] == NONE) return false;
   /*石を置き,挟んだ石を裏返す操作*/
-  flipDiscs(Point);
+  flipDiscs(point);
   /*手数と手番の色を更新*/
   ++Turns;
   CurrentColor *= -1;
   /*置ける位置とその点における方向を調べなおす*/
   initMovable();
-
   return true;
 }
 
-bool Board::isGameOver(){
+bool Board::isGameOver()const{
   /*
   ゲームの終了を判定する
   */
-  if(Turns == MAX_TURNS) return true;
+  if(Turns == MAX_TURNS)return true;
   if(!MovablePos[Turns].empty()) return false;
   Disc disc;
   disc.color = -CurrentColor;
@@ -149,13 +150,13 @@ void Board::initMovable(){
 
   int dir;
 
-  getMovablePos[Turns].clear();
+  MovablePos[Turns].clear();
   for(int x=1;x<=BOARD_SIZE;x++){
     disc.x = x;
     for(int y=1;y<=BOARD_SIZE;y++){
       disc.y = y;
       dir = checkMobility(disc);
-      if(dir != NONE)getMovablePos[Turns].push_back(disc);
+      if(dir != NONE)MovablePos[Turns].push_back(disc);
       MovableDir[Turns][x][y] = dir;
     }
   }
@@ -169,23 +170,24 @@ void Board::flipDiscs(const Point& point){
   int x,y;
   Disc operation(point.x,point.y,CurrentColor);//操作が行われた石(最初は打った石)
 
-  int dir = MovableDir[Turns][x][y];
-
+  int dir = MovableDir[Turns][point.x][point.y];
   std::vector<Disc> update;
-
   RawBoard[point.x][point.y] = CurrentColor;
   update.push_back(operation);
   /*
   各方向に行けるか,また,行けるときに裏返す石の情報を裏返しながら得る.
   */
-  for(int i=0;i<9;i++){
+  for(int i=0;i<8;i++){
     if(dir & dr[i]){
       x = point.x;
       y = point.y;
+      std::cout << dr[i] << endl;
       while(RawBoard[x+dx[i]][y+dy[i]]!=CurrentColor){
         RawBoard[x+dx[i]][y+dy[i]] = CurrentColor;
-        operation.x = x;
-        operation.y = y;
+        operation.x = x+dx[i];
+        operation.y = y+dy[i];
+        x+=dx[i];
+        y+=dy[i];
         update.push_back(operation);
       }
     }
@@ -194,9 +196,9 @@ void Board::flipDiscs(const Point& point){
   /*
   それぞれの石の数を更新する
   */
-  int discdiff = update.size();
+  int discdiff = (int)update.size();
   Discs[CurrentColor] += discdiff;
-  Discs[-CurrentColor] -= discdiff;
+  Discs[-CurrentColor] -= discdiff-1;
   Discs[EMPTY]--;
 
   UpdateLog.push_back(update);

@@ -1,6 +1,10 @@
-#include <vector>
+#ifndef INCLUDE_Board_h_
+#define INCLUDE_Board_h_
 
+#include <vector>
+#include "Reversi.h"
 const int BOARD_SIZE = 8;
+const int MAX_TURNS = 60;
 //メソッドの最後にconstがついてるのはメンバ変数を変更しないようにするため
 class Board
 {
@@ -65,3 +69,4 @@ private:
   void initMovable();
 
 };
+#endif

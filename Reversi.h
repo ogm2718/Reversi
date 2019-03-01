@@ -1,4 +1,9 @@
+#ifndef INCLUDE_Reversi_h_
+#define INCLUDE_Reversi_h_
+
 #include <string>
+#include <sstream>
+#include <iostream>
 typedef int Color;
 const Color EMPTY = 0;
 const Color BLACK = 1;
@@ -39,11 +44,11 @@ struct Point
 struct Disc : public Point{
   Color color;
 
-  Disc() : Point(0,0){
+  Disc():Point(0,0){
     color = EMPTY;
   }
 
-  Disc(int x,int y, Color color) : Point(x,y){
+  Disc(int x,int y,Color color):Point(x,y){
     this->color = color;
   }
 };
@@ -56,8 +61,9 @@ public:
     return data[color+1];
   }
 
-  T& operator[](Color color) const {
+  const T& operator[](Color color) const {
     return data[color+1];
   }
 
 };
+#endif
