@@ -83,7 +83,6 @@ bool Board::undo(){
   }else{
     /*前のターンがパスでない*/
     --Turns;
-    std::cout << update[0].x << " " << update[0].y << endl;
     RawBoard[update[0].x][update[0].y]=EMPTY;
     for(int i=1;i<(int)update.size();i++){
       RawBoard[update[i].x][update[i].y]=-CurrentColor;
@@ -110,8 +109,8 @@ bool Board::pass(){
 
 bool Board::move(const Point& point){
   /*そもそも石が置けるかどうかの判定*/
-  if(point.x < 0 || point.x >= BOARD_SIZE) return false;
-  if(point.y < 0 || point.y >= BOARD_SIZE) return false;
+  if(point.x < 0 || point.x > BOARD_SIZE) return false;
+  if(point.y < 0 || point.y > BOARD_SIZE) return false;
   if(MovableDir[Turns][point.x][point.y] == NONE) return false;
   /*石を置き,挟んだ石を裏返す操作*/
   flipDiscs(point);
@@ -181,7 +180,7 @@ void Board::flipDiscs(const Point& point){
     if(dir & dr[i]){
       x = point.x;
       y = point.y;
-      std::cout << dr[i] << endl;
+      //std::cout << dr[i] << endl;
       while(RawBoard[x+dx[i]][y+dy[i]]!=CurrentColor){
         RawBoard[x+dx[i]][y+dy[i]] = CurrentColor;
         operation.x = x+dx[i];

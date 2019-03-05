@@ -36,15 +36,20 @@ int main(){
     cout << "WHITE " << Board.countDisc(WHITE) << " ";
     cout << "SPACE " << Board.countDisc(EMPTY) << endl << endl;
 
-    cout << "Please input your move: ";
+    cout << "Please input ";
+    if(Board.getCorrentColor()==BLACK)cout << "BLACK ";
+    else cout << "WHITE ";
+    cout << "move: ";
     Point p;
     string in;
     cin >> in;
     if(in=="p"){
       if(!Board.pass()){
         cout << "You cannot pass!" << endl;
-        continue;
+      }else{
+        cout << "PASS" << endl;
       }
+      continue;
     }
     if(in=="u"){
       Board.undo();
@@ -66,6 +71,9 @@ int main(){
 
     if(Board.isGameOver()){
       cout << "----------- Finish this Game! ------------" << endl;
+      if(countDisc[BLACK]>countDisc[WHITE])cout << "BLACK won !!" << endl;
+      else if(countDisc[BLACK]<countDisc[WHITE])cout << "WHITE won !!" << endl;
+      else cout << "Draw!" << endl;
       return 0;
     }
   }
